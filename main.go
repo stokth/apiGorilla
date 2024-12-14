@@ -15,7 +15,7 @@ type Task struct {
 var tasks = make(map[int]Task)
 
 func GetHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet { // Replace with actual task data
+	if r.Method == http.MethodGet {
 		fmt.Fprintf(w, "Hello, %s", tasks[0].Text)
 	}
 }
