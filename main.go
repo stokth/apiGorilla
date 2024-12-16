@@ -69,7 +69,7 @@ func PatchHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPatch {
+	if r.Method == http.MethodDelete {
 		idParam := mux.Vars(r)["id"]
 		id, err := strconv.Atoi(idParam)
 		if err != nil {
@@ -80,7 +80,7 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintln(w, "Ошибка при удалении сообщения")
 		}
 	} else {
-		fmt.Fprintln(w, "Поддерживается только PATCH-запрос")
+		fmt.Fprintln(w, "Поддерживается только Delete-запрос")
 	}
 }
 
