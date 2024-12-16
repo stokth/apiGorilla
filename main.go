@@ -96,5 +96,6 @@ func main() {
 	router.HandleFunc("/api/get", GetHandler).Methods("GET")
 	router.HandleFunc("/api/posts", PostHandler).Methods("POST")
 	router.HandleFunc("/api/patch/{id}", PatchHandler).Methods("PATCH")
+	router.HandleFunc("/api/delete/{id}", DeleteHandler).Methods("DELETE")
 	http.ListenAndServe(":8080", router)
 }
