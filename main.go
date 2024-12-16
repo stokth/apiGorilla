@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -37,6 +38,52 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func PatchHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPatch {
+		idParam := mux.Vars(r)["id"]
+		id, err := strconv.Atoi(idParam)
+		if err != nil {
+			fmt.Fprintln(w, "Неверный идентификатор сообщения")
+		}
+
+		var updateMessage Message
+		var message Message
+		json.NewDecoder(r.Body).Decode(&updateMessage)
+
+		if err := DB.First(&message, id).Error; err != nil {
+			fmt.Fprintln(w, "Сообщение с таким идентификатором не найдено")
+		}
+
+		if updateMessage.Task == "" {
+			updateMessage.Task = message.Task
+		} else if !updateMessage.IsDone && message.IsDone != updateMessage.IsDone {
+			updateMessage.IsDone = message.IsDone
+		}
+
+		if err := DB.Model(&Message{}).Where("id = ?", id).Update("is_done", updateMessage.IsDone).Update("task", updateMessage.Task).Error; err != nil {
+			fmt.Fprintln(w, "Ошибка при изменении сообщения")
+		}
+	} else {
+		fmt.Fprintln(w, "Поддерживается только PATCH-запрос")
+	}
+}
+
+func DeleteHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPatch {
+		idParam := mux.Vars(r)["id"]
+		id, err := strconv.Atoi(idParam)
+		if err != nil {
+			fmt.Fprintln(w, "Неверный идентификатор сообщения")
+		}
+
+		if err := DB.Delete(&Message{}, id).Error; err != nil {
+			fmt.Fprintln(w, "Ошибка при удалении сообщения")
+		}
+	} else {
+		fmt.Fprintln(w, "Поддерживается только PATCH-запрос")
+	}
+}
+
 func main() {
 	// Вызываем инициализацию базы данных
 	InitDB()
@@ -48,5 +95,6 @@ func main() {
 
 	router.HandleFunc("/api/get", GetHandler).Methods("GET")
 	router.HandleFunc("/api/posts", PostHandler).Methods("POST")
+	router.HandleFunc("/api/patch/{id}", PatchHandler).Methods("PATCH")
 	http.ListenAndServe(":8080", router)
 }
