@@ -38,18 +38,6 @@ func (r *taskRepository) GetAllTasks() ([]Task, error) {
 }
 
 func (r *taskRepository) UpdateTaskByID(id uint, task Task) (Task, error) {
-	var taski Task
-	err := r.db.First(&taski, id).Error
-	if err != nil {
-		return Task{}, err
-	}
-
-	if task.Task == "" {
-		task.Task = taski.Task
-	} else if !task.IsDone && taski.IsDone != task.IsDone {
-		task.IsDone = taski.IsDone
-	}
-
 	result := r.db.Model(&Task{}).Where("id =?", id).Update("task", task.Task).Update("is_done", task.IsDone)
 	if result.Error != nil {
 		return Task{}, result.Error

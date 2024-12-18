@@ -4,11 +4,6 @@ import (
 	"apiGorilla/internal/taskService"
 	"apiGorilla/internal/web/tasks"
 	"context"
-	"encoding/json"
-	"net/http"
-	"strconv"
-
-	"github.com/gorilla/mux"
 )
 
 type Handler struct {
@@ -42,7 +37,7 @@ func (h *Handler) PatchTasksId(ctx context.Context, request tasks.PatchTasksIdRe
 	}
 
 	response := tasks.PatchTasksId200JSONResponse{
-		Id:     &updatedTask.ID,
+		Id:     &request.Id,
 		Task:   &updatedTask.Task,
 		IsDone: &updatedTask.IsDone,
 	}
@@ -101,41 +96,4 @@ func NewHandler(service *taskService.TaskService) *Handler {
 	return &Handler{
 		Service: service,
 	}
-}
-
-func (h *Handler) PatchTaskHandler(w http.ResponseWriter, r *http.Request) {
-	idParam := mux.Vars(r)["id"]
-	id, err := strconv.Atoi(idParam)
-	if err != nil {
-		http.Error(w, "Неверный тип идентификатора задачи", http.StatusBadRequest)
-	}
-
-	var updatedTask taskService.Task
-	err = json.NewDecoder(r.Body).Decode(&updatedTask)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-	}
-
-	updatedTask, err = h.Service.UpdateTaskByID(uint(id), updatedTask)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(updatedTask)
-}
-
-func (h *Handler) DeleteTaskHandler(w http.ResponseWriter, r *http.Request) {
-	idParam := mux.Vars(r)["id"]
-	id, err := strconv.Atoi(idParam)
-	if err != nil {
-		http.Error(w, "Неверный тип идентификатора задачи", http.StatusBadRequest)
-	}
-
-	err = h.Service.DeleteTaskByID(uint(id))
-	if err != nil {
-		http.Error(w, "Не удалось удалить таску", http.StatusBadRequest)
-	}
-
-	w.Header().Set("Content-Type", "application/json")
 }
