@@ -1,6 +1,10 @@
 package userService
 
-import "gorm.io/gorm"
+import (
+	"apiGorilla/internal/taskService"
+
+	"gorm.io/gorm"
+)
 
 type UsersRepository interface {
 	// CreateTask - Передаем в функцию task типа Task их orm.go
@@ -8,6 +12,8 @@ type UsersRepository interface {
 	CreateUser(task Users) (Users, error)
 	// GetAllTasks - Возвращаем массив из всех задач в БД и ошибку
 	GetAllUsers() ([]Users, error)
+	// GetTasksForUser - Передаем id пользователя, возвращаем массив из всех его задач
+	GetTasksForUser(userID uint) ([]taskService.Task, error)
 	// UpdateTaskByID - Передаем id и Task, возвращаем обновленный Task
 	// и ошибку
 	UpdateUserByID(id uint, user Users) (Users, error)
@@ -24,6 +30,7 @@ func NewUsersRepository(db *gorm.DB) *userRepository {
 }
 
 func (r *userRepository) CreateUser(user Users) (Users, error) {
+	user.Tasks = make([]taskService.Task, 0)
 	result := r.db.Create(&user)
 	if result.Error != nil {
 		return Users{}, result.Error
@@ -35,6 +42,12 @@ func (r *userRepository) GetAllUsers() ([]Users, error) {
 	var users []Users
 	err := r.db.Find(&users).Error
 	return users, err
+}
+
+func (r *userRepository) GetTasksForUser(userID uint) ([]taskService.Task, error) {
+	var tasks []taskService.Task
+	err := r.db.Where("user_id = ?", userID).Find(&tasks).Error
+	return tasks, err
 }
 
 func (r *userRepository) UpdateUserByID(id uint, user Users) (Users, error) {

@@ -73,6 +73,7 @@ func (h *Handler) PostTasks(_ context.Context, request tasks.PostTasksRequestObj
 	taskToCreate := taskService.Task{
 		Task:   *taskRequest.Task,
 		IsDone: *taskRequest.IsDone,
+		UserID: *taskRequest.UserID,
 	}
 
 	createdTask, err := h.Service.CreateTask(taskToCreate)
@@ -85,6 +86,7 @@ func (h *Handler) PostTasks(_ context.Context, request tasks.PostTasksRequestObj
 		Id:     &createdTask.ID,
 		Task:   &createdTask.Task,
 		IsDone: &createdTask.IsDone,
+		UserID: &createdTask.UserID,
 	}
 
 	return response, nil

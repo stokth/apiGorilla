@@ -1,6 +1,8 @@
 package taskService
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type TaskRepository interface {
 	// CreateTask - Передаем в функцию task типа Task их orm.go
@@ -8,6 +10,8 @@ type TaskRepository interface {
 	CreateTask(task Task) (Task, error)
 	// GetAllTasks - Возвращаем массив из всех задач в БД и ошибку
 	GetAllTasks() ([]Task, error)
+	// GetTasksForUser - Передаем id пользователя, возвращаем массив его задач и ошибку
+	GetTasksForUser(userID uint) ([]Task, error)
 	// UpdateTaskByID - Передаем id и Task, возвращаем обновленный Task
 	// и ошибку
 	UpdateTaskByID(id uint, task Task) (Task, error)
@@ -17,6 +21,11 @@ type TaskRepository interface {
 
 type taskRepository struct {
 	db *gorm.DB
+}
+
+// GetTasksForUser implements TaskRepository.
+func (r *taskRepository) GetTasksForUser(userID uint) ([]Task, error) {
+	panic("unimplemented")
 }
 
 func NewTaskRepository(db *gorm.DB) *taskRepository {

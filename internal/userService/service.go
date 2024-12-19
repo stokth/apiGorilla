@@ -1,5 +1,7 @@
 package userService
 
+import "apiGorilla/internal/taskService"
+
 type UserService struct {
 	repo UsersRepository
 }
@@ -14,6 +16,10 @@ func (s *UserService) CreateUser(user Users) (Users, error) {
 
 func (s *UserService) GetAllUsers() ([]Users, error) {
 	return s.repo.GetAllUsers()
+}
+
+func (s *UserService) GetTasksForUser(userID uint) ([]taskService.Task, error) {
+	return s.repo.GetTasksForUser(userID)
 }
 
 func (s *UserService) UpdateUserByID(id uint, user Users) (Users, error) {
