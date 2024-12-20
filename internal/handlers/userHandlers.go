@@ -10,23 +10,27 @@ type HandlerUsers struct {
 	Service *userService.UserService
 }
 
-// GetUsersTasksId implements users.StrictServerInterface.
-func (h *HandlerUsers) GetUsersTasksId(ctx context.Context, request users.GetUsersTasksIdRequestObject) (users.GetUsersTasksIdResponseObject, error) {
+// GetUsersIdTasks implements users.StrictServerInterface.
+func (h *HandlerUsers) GetUsersIdTasks(ctx context.Context, request users.GetUsersIdTasksRequestObject) (users.GetUsersIdTasksResponseObject, error) {
 	allTasksForUser, err := h.Service.GetTasksForUser(request.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	response := users.GetUsersTasksId200JSONResponse{}
-
+	response := users.GetUsersIdTasks200JSONResponse{}
+	var tasks users.Users
+	var taski []users.Task
 	for _, tsk := range allTasksForUser {
-		tasks := users.Task{
+		taski = append(taski, users.Task{
 			Id:     &tsk.ID,
 			Task:   &tsk.Task,
 			IsDone: &tsk.IsDone,
-		}
-		response = append(response, tasks)
+			UserId: &tsk.UserID,
+		})
 	}
+
+	tasks.Tasks = &taski
+	response = append(response, tasks)
 
 	return response, nil
 }

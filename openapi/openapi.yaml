@@ -151,7 +151,7 @@ paths:
       responses:
         '204':
           description: No content, this user has been deleted.
-  /users/tasks/{id}:
+  /users/{id}/tasks:
     get:
       summary: Get all tasks from a user
       tags:
@@ -200,3 +200,7 @@ components:
           type: string
         password:
           type: string
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'

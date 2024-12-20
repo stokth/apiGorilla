@@ -1,7 +1,5 @@
 package userService
 
-import "apiGorilla/internal/taskService"
-
 type UserService struct {
 	repo UsersRepository
 }
@@ -18,7 +16,7 @@ func (s *UserService) GetAllUsers() ([]Users, error) {
 	return s.repo.GetAllUsers()
 }
 
-func (s *UserService) GetTasksForUser(userID uint) ([]taskService.Task, error) {
+func (s *UserService) GetTasksForUser(userID uint) ([]Task, error) {
 	return s.repo.GetTasksForUser(userID)
 }
 

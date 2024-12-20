@@ -1,8 +1,6 @@
 package userService
 
 import (
-	"apiGorilla/internal/taskService"
-
 	"gorm.io/gorm"
 )
 
@@ -13,7 +11,7 @@ type UsersRepository interface {
 	// GetAllTasks - Возвращаем массив из всех задач в БД и ошибку
 	GetAllUsers() ([]Users, error)
 	// GetTasksForUser - Передаем id пользователя, возвращаем массив из всех его задач
-	GetTasksForUser(userID uint) ([]taskService.Task, error)
+	GetTasksForUser(userID uint) ([]Task, error)
 	// UpdateTaskByID - Передаем id и Task, возвращаем обновленный Task
 	// и ошибку
 	UpdateUserByID(id uint, user Users) (Users, error)
@@ -30,7 +28,7 @@ func NewUsersRepository(db *gorm.DB) *userRepository {
 }
 
 func (r *userRepository) CreateUser(user Users) (Users, error) {
-	user.Tasks = make([]taskService.Task, 0)
+	user.Tasks = make([]Task, 0)
 	result := r.db.Create(&user)
 	if result.Error != nil {
 		return Users{}, result.Error
@@ -44,8 +42,8 @@ func (r *userRepository) GetAllUsers() ([]Users, error) {
 	return users, err
 }
 
-func (r *userRepository) GetTasksForUser(userID uint) ([]taskService.Task, error) {
-	var tasks []taskService.Task
+func (r *userRepository) GetTasksForUser(userID uint) ([]Task, error) {
+	var tasks []Task
 	err := r.db.Where("user_id = ?", userID).Find(&tasks).Error
 	return tasks, err
 }
